@@ -250,6 +250,7 @@ stage0(log_t *plog_t, int tnot){
     /* Number of distinct traces */
     int nodt = 1;
     log_t * log_tt = traces_linked_list(plog_t, tnot, &nodt);
+
     /* Most frequent trace frequency */
     int mftf_nums=0;
     mftf_idx_t *mftf = most_frequent_trace_frequency(log_tt, nodt, &mftf_nums);
@@ -401,6 +402,40 @@ traces_linked_list(log_t *plog_t, int tnot, int *nodt){
             }
         }
     }
+
+    // if(*nodt >= 2){
+    //     for(int i=0; i<*nodt-1; ++i){
+    //         for(int j=i+1; j<*nodt; ++j){
+            
+    //             event_t* first_head = plog_tt[i].trcs->head;
+    //             event_t* second_head = plog_tt[j].trcs->head;
+    //             while (second_head != NULL){
+    //                 /* code */
+    //                 if(second_head->actn < first_head->actn){
+    //                     int temp_freq = plog_tt[i].trcs->freq;
+    //                     plog_tt[i].trcs->freq = plog_tt[j].trcs->freq;
+    //                     plog_tt[j].trcs->freq = temp_freq;
+
+    //                     event_t* change_first_head = plog_tt[i].trcs->head;
+    //                     event_t* change_second_head = plog_tt[j].trcs->head;
+    //                     while (change_second_head != NULL){
+    //                         action_t temp_act = change_first_head->actn;
+    //                         change_first_head->actn = change_second_head->actn;
+    //                         change_second_head->actn = temp_act;
+    //                         change_second_head = change_second_head->next;
+    //                         change_first_head = change_first_head->next;
+    //                     }
+    //                     break;
+    //                 }else if(second_head->actn == first_head->actn){
+    //                     second_head = second_head->next;
+    //                     first_head = first_head->next;
+    //                 }else if(second_head->actn > first_head->actn){
+    //                     break;
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
     return plog_tt;
 }
 
@@ -501,11 +536,55 @@ most_frequent_trace_frequency(log_t *plog_tt, int nodt, int *mftf_nums){
     }
 
     /* second, to store all traces of the highest frequency */
+    int cnt = 0;
     for(int i=0; i<nodt; ++i){
         if(plog_tt[i].trcs->freq == *mftf_nums){
+            ++cnt;
+            // insert_at_mftf_foot(mftf, i);
+        }
+    }
+
+    if(cnt >= 2){
+        for(int i=0; i<nodt-1; ++i){
+            for(int j=i+1; j<nodt; ++j){
+            
+                event_t* first_head = plog_tt[i].trcs->head;
+                event_t* second_head = plog_tt[j].trcs->head;
+                while (second_head != NULL){
+                    /* code */
+                    if(second_head->actn < first_head->actn){
+                        int temp_freq = plog_tt[i].trcs->freq;
+                        plog_tt[i].trcs->freq = plog_tt[j].trcs->freq;
+                        plog_tt[j].trcs->freq = temp_freq;
+
+                        event_t* change_first_head = plog_tt[i].trcs->head;
+                        event_t* change_second_head = plog_tt[j].trcs->head;
+                        while (change_second_head != NULL){
+                            action_t temp_act = change_first_head->actn;
+                            change_first_head->actn = change_second_head->actn;
+                            change_second_head->actn = temp_act;
+                            change_second_head = change_second_head->next;
+                            change_first_head = change_first_head->next;
+                        }
+                        break;
+                    }else if(second_head->actn == first_head->actn){
+                        second_head = second_head->next;
+                        first_head = first_head->next;
+                    }else if(second_head->actn > first_head->actn){
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    for(int i=0; i<nodt; ++i){
+        if(plog_tt[i].trcs->freq == *mftf_nums){
+            // ++cnt;
             insert_at_mftf_foot(mftf, i);
         }
     }
+
 
     return mftf->next;
 }
