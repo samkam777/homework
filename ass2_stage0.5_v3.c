@@ -111,7 +111,7 @@ void            print_blank();
 int             whether_trace_exists(trace_t **ptrace1, trace_t **ptrace2);
 void            insert_at_event_foot(total_events_t *pevents, action_t action);
 total_events_t    *remove_duplicate_elements(total_events_t *pevents);
-void            BubbleSort(total_events_t *head);
+void            bubble_sort(total_events_t *head);
 log_t           *traces_linked_list(log_t *plog_t, int tnot, int *nodt);
 total_events_t    *events_linked_list(log_t *plog_t, int tnot);
 int             calculate_number_of_distinct_events(total_events_t *t_events);
@@ -124,10 +124,11 @@ void            insert_at_mftf_foot(mftf_idx_t *pmftf, int idx);
 total_events_t    *stage0(log_t *plog_t, int tnot);
 
 
-int             calculateDim(total_events_t *t_events);
-void            printMatrix(int size, total_events_t *t_events, void* matrix);
-void*           makeMatrix(int size, total_events_t *t_events, log_t *plog_t, int tnot);
-void            printLine();
+int             calculate_dim(total_events_t *t_events);
+void            print_matrix(int size, total_events_t *t_events, void* matrix);
+void*           make_matrix(int size, total_events_t *t_events, log_t *plog_t, int tnot);
+int             search_index(total_events_t *t_events, action_t target);
+void            print_line();
 void            stage1(total_events_t **t_events, log_t *plog_t, int tnot);
 
 
@@ -306,7 +307,7 @@ remove_duplicate_elements(total_events_t *pevents){
      * @param pevents: total events linked list
      * @return dummy->next: the new total events linked list which remove duplicate elements
      */
-    BubbleSort(pevents);
+    bubble_sort(pevents);
 
     if(!pevents)
         return pevents;
@@ -331,7 +332,7 @@ remove_duplicate_elements(total_events_t *pevents){
 }
 
 void 
-BubbleSort(total_events_t *head){
+bubble_sort(total_events_t *head){
     /*
      * @brief bubble sort
      * @param head: total events linked list
@@ -595,13 +596,13 @@ whether_trace_exists(trace_t **ptrace1, trace_t **ptrace2){
 
 void stage1(total_events_t **t_events, log_t *plog_t, int tnot)
 {
-    int matrix_size = calculateDim(*t_events);
-    void * matrix = makeMatrix(matrix_size, *t_events, plog_t, tnot);
-    printMatrix(matrix_size, *t_events, matrix);
-    printLine();
+    int matrix_size = calculate_dim(*t_events);
+    void * matrix = make_matrix(matrix_size, *t_events, plog_t, tnot);
+    print_matrix(matrix_size, *t_events, matrix);
+    print_line();
 }
 
-int calculateDim(total_events_t *t_events)
+int calculate_dim(total_events_t *t_events)
 {
     int size = 0;
     total_events_t *t_events_node = t_events;
@@ -612,7 +613,7 @@ int calculateDim(total_events_t *t_events)
     return size;
 }
 
-int searchIndex(total_events_t *t_events, action_t target)
+int search_index(total_events_t *t_events, action_t target)
 {
     int index = 0;
     
@@ -630,7 +631,7 @@ int searchIndex(total_events_t *t_events, action_t target)
     return index;
 }
 
-void* makeMatrix(int size, total_events_t *t_events, log_t *plog_t, int tnot)
+void* make_matrix(int size, total_events_t *t_events, log_t *plog_t, int tnot)
 {
     int **matrix = (int **)malloc(size * sizeof(int*));
     for (int i=0; i<size; i++){
@@ -649,10 +650,10 @@ void* makeMatrix(int size, total_events_t *t_events, log_t *plog_t, int tnot)
             
             if (record_a == -1){ 
                 record_a = head->actn;
-                index_a = searchIndex(t_events, record_a);
+                index_a = search_index(t_events, record_a);
             }else{
                 record_b = head->actn;
-                index_b = searchIndex(t_events, record_b);
+                index_b = search_index(t_events, record_b);
                 matrix[index_a][index_b] += 1;
                 record_a = record_b;
                 index_a = index_b;
@@ -665,7 +666,7 @@ void* makeMatrix(int size, total_events_t *t_events, log_t *plog_t, int tnot)
 }
 
 
-void printMatrix(int size, total_events_t *t_events, void* matrix)
+void print_matrix(int size, total_events_t *t_events, void* matrix)
 {
     int **matrix_tmp = (int **)matrix;
     total_events_t *t_events_p = NULL;
@@ -713,7 +714,7 @@ print_blank(){
     printf("\n");
 }
 
-void printLine()
+void print_line()
 {
     printf("-------------------------------------\n");
 }
