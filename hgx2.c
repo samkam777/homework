@@ -787,6 +787,8 @@ traces_linked_list(log_t *plog_t, int tnot, int *nodt){
 
     plog_tt[0].trcs = (trace_t*)malloc(sizeof(trace_t));
     plog_tt[0].trcs->freq = plog_t[0].trcs->freq;
+    plog_tt[0].trcs->foot = NULL;
+    plog_tt[0].trcs->head = NULL;
     event_t* tmp_head = plog_t[0].trcs->head;
     while(tmp_head != NULL){
         insert_at_foot(&(plog_tt[0].trcs), tmp_head->actn);
@@ -805,6 +807,8 @@ traces_linked_list(log_t *plog_t, int tnot, int *nodt){
             plog_tt = (log_t*)realloc(plog_tt, *nodt * (sizeof(log_t)));
             plog_tt[*nodt-1].trcs = (trace_t*)malloc(sizeof(trace_t));
             plog_tt[*nodt-1].trcs->freq = plog_t[i].trcs->freq;             // copy freq
+            plog_tt[*nodt-1].trcs->foot = NULL;
+            plog_tt[*nodt-1].trcs->head = NULL;
             tmp_head = plog_t[i].trcs->head;
             while(tmp_head != NULL){
                 insert_at_foot(&(plog_tt[*nodt-1].trcs), tmp_head->actn);
